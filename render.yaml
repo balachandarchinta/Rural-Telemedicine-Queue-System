@@ -1,0 +1,23 @@
+services:
+  # Backend FastAPI Service
+  - type: web
+    name: rtqs-backend
+    env: python
+    buildCommand: "cd api_server && pip install -r requirements.txt"
+    startCommand: "cd api_server && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+
+  # Frontend Static Site
+  - type: web
+    name: rtqs-frontend
+    env: static
+    buildCommand: "cd frontend && npm install && npm run build"
+    staticPublishPath: "./frontend/dist"
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: rtqs-backend
+          envVarKey: RENDER_EXTERNAL_URL
